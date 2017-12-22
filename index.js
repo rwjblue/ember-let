@@ -6,10 +6,18 @@ var VersionChecker = require('ember-cli-version-checker');
 module.exports = {
   name: 'ember-let',
 
+  init() {
+    this._super.init && this._super.init.apply(this, arguments);
+
+    var checker = new VersionChecker(this);
+    this._emberDep = checker.forEmber();
+  },
+
   setupPreprocessorRegistry: function(type, registry) {
     let emberDep = new VersionChecker(this).forEmber();
 
     // Inline let is only supported in Ember 2.0 and up.
+
     if (emberDep.lt('2.0.0')) {
       return;
     }
