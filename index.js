@@ -6,16 +6,11 @@ var VersionChecker = require('ember-cli-version-checker');
 module.exports = {
   name: 'ember-let',
 
-  init() {
-    this._super.init && this._super.init.apply(this, arguments);
-
-    var checker = new VersionChecker(this);
-    this._emberDep = checker.forEmber();
-  },
-
   setupPreprocessorRegistry: function(type, registry) {
+    let emberDep = new VersionChecker(this).forEmber();
+
     // Inline let is only supported in Ember 2.0 and up.
-    if (this._emberDep.lt('2.0.0')) {
+    if (emberDep.lt('2.0.0')) {
       return;
     }
 
@@ -31,16 +26,19 @@ module.exports = {
   included: function(app) {
     this._super.included.apply(this, arguments);
 
-    this._ensureThisImport();
+    let emberDep = new VersionChecker(this).forEmber();
+
+    // This ain't real :(
+    // this._ensureThisImport();
 
     let version;
-    if (this._emberDep.lt('2.10.0')) {
+    if (emberDep.lt('2.10.0')) {
       version = 'ember-lt-2-10';
-    } else if (this._emberDep.lt('2.13.0')) {
+    } else if (emberDep.lt('2.13.0')) {
       version = 'ember-lt-2-13';
-    } else if (this._emberDep.lt('2.15.0-alpha.1')) {
+    } else if (emberDep.lt('2.15.0-alpha.1')) {
       version = 'ember-lt-2-15';
-    } else if (this._emberDep.gte('2.15.0-alpha.1')) {
+    } else if (emberDep.gte('2.15.0-alpha.1')) {
       version = 'current';
     }
 
@@ -48,7 +46,7 @@ module.exports = {
   },
 
   treeForVendor: function(rawVendorTree) {
-    let babelAddon = this.addons.find(addon => addon.name === 'ember-cli-babel');
+    let babelAddon = this.addons.find((addon) => addon.name === 'ember-cli-babel');
 
     let transpiledVendorTree = babelAddon.transpileTree(rawVendorTree, {
       'ember-cli-babel': {
